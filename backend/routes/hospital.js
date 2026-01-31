@@ -50,13 +50,46 @@ router.post('/login',
             if(!hospital) return res.unauthorized("Invalid credentials");
             const match = await bcrypt.compare(req.body.password, hospital.password);
             if(!match ) return res.unauthorized("Invalid credentials");
-            const token = signToken(hospital._.id, 'hospital');
+            const token = signToken(hospital._id, 'hospital');
             res.created({token, user: {id:hospital._id, type:'hospital'}},'Login successful')
         } catch (error) {
             res.serverError('Login failed', [error.message])
         }
     }
 )
+
+router.get('/me', authenticate, requireRole('hospital'), async (req, res) => {
+    try {
+        const hospital = await Hospital.findById(req.user._id).select('-password');
+        if (!hospital) {
+            return res.notFound('Hospital not found');
+        }
+        res.ok(hospital, 'Hospital profile fetched successfully');
+    } catch (error) {
+        res.serverError('Failed to fetch hospital profile', [error.message]);
+    }
+});
+
+router.put('/onboarding/update', authenticate, requireRole('hospital'), async (req, res) => {
+    try {
+        const hospital = await Hospital.findByIdAndUpdate(req.user._id, req.body, { new: true }).select('-password');
+        if (!hospital) {
+            return res.notFound('Hospital not found');
+        }
+        res.ok(hospital, 'Hospital profile updated successfully');
+    } catch (error) {
+        res.serverError('Failed to update hospital profile', [error.message]);
+    }
+});
+
+router.get('/doctors', authenticate, requireRole('hospital'), async (req, res) => {
+    try {
+        const doctors = await Doctor.find({ hospital: req.user._id });
+        res.ok(doctors, 'Doctors fetched successfully');
+    } catch (error) {
+        res.serverError('Failed to fetch doctors', [error.message]);
+    }
+});
 
 router.put('/doctors/:doctorId/remove',
     authenticate,
