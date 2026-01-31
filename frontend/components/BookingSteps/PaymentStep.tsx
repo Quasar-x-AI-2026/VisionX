@@ -28,7 +28,7 @@ interface PaymentStepInterface {
   appointmentId?: string;
   patientName?: string;
 }
-const PayementStep = ({
+const PaymentStep = ({
   selectedDate,
   selectedSlot,
   consultationType,
@@ -358,4 +358,4 @@ const PayementStep = ({
   );
 };
 
-export default PayementStep;
+export default PaymentStep;

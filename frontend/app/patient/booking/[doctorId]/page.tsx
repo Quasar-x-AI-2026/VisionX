@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import CalendarStep from "@/components/BookingSteps/CalendarStep";
 import ConsultationStep from "@/components/BookingSteps/ConsultationStep";
-import PayementStep from "@/components/BookingSteps/PayementStep";
+import PaymentStep from "@/components/BookingSteps/PaymentStep";
 
 const page = () => {
   const params = useParams();
@@ -240,7 +240,7 @@ const page = () => {
                       {step === 1
                         ? "Select Time"
                         : step === 2
-                        ? "Deatils"
+                        ? "Details"
                         : "Payment"}
                     </span>
                   </div>
@@ -306,11 +306,11 @@ const page = () => {
                   {currentStep === 3 && (
                     <motion.div
                       key="step3"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
+                      initial={{ opacity: 10, x: 20 }}
+                      animate={{ opacity: 10, x: 0 }}
+                      exit={{ opacity: 10, x: -20 }}
                     >
-                      <PayementStep 
+                      <PaymentStep 
                       selectedDate={selectedDate}
                       selectedSlot={selectedSlot}
                       consultationType={consultationType}

@@ -1,145 +1,86 @@
-import { consultationTypes } from "@/lib/constant";
 import React from "react";
-import { Label } from "../ui/label";
-import { Icon } from "lucide-react";
+import { Card, CardContent } from "../ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
+import { MapPin, Star, Stethoscope, Calendar } from "lucide-react";
 
-interface ConsultationStepInterface {
-  consultationType: string;
-  setConsultationType: (type: string) => void;
-  symptoms: string;
-  setSymptoms: (symptoms: string) => void;
-  doctorFees: number;
-  onBack: () => void;
-  onContinue: () => void;
+interface DoctorProfileProps {
+  doctor: any;
 }
-const ConsultationStep = ({
-  consultationType,
-  setConsultationType,
-  symptoms,
-  setSymptoms,
-  doctorFees,
-  onBack,
-  onContinue,
-}: ConsultationStepInterface) => {
-  const getConsultationPrice = (selectedType = consultationType) => {
-    const typePrice =
-      consultationTypes.find((ct) => ct.type === selectedType)?.price || 0;
-    return Math.max(0, doctorFees + typePrice);
-  };
 
-  const handleTypeChnage = (newType: string) => {
-    setConsultationType(newType);
-  };
+const DoctorProfile = ({ doctor }: DoctorProfileProps) => {
+  if (!doctor) {
+    return null;
+  }
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-6">
-          Consultation Details
-        </h3>
-        <div className="mb-8">
-          <Label className="text-base font-semibold mb-4 block">
-            Select Consultation Type
-          </Label>
-          <div className="space-y-3">
-            {consultationTypes.map(
-              ({ type, icon: Icon, description, price, recommended }) => {
-                const currentPrice = getConsultationPrice(type);
-                const isSelected = consultationType === type;
-                return (
-                  <div
-                    key={type}
-                    className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                      isSelected
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                    onClick={() => handleTypeChnage(type)}
-                  >
-                    {recommended && (
-                      <Badge className="absolute -top-2 left-4 bg-green-500">
-                        Recommended
-                      </Badge>
-                    )}
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                          isSelected ? "bg-blue-100" : "bg-gray-100"
-                        }`}
-                      >
-                        <Icon
-                          className={`w-6 h-6 ${
-                            isSelected ? "text-blue-600" : "text-gray-600"
-                          }`}
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{type}</h4>
-                        <p className="text-sm text-gray-600">{description}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-gray-900">
-                          ₹{currentPrice}
-                        </p>
-                        {price !== 0 && (
-                          <p className="text-sm text-green-600">
-                            Save ₹{Math.abs(price)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              }
-            )}
+    <Card className="shadow-lg border-0 sticky top-24">
+      <CardContent className="p-6">
+        <div className="text-center mb-4">
+          <Avatar className="w-24 h-24 mx-auto mb-3">
+            <AvatarImage src={doctor.profileImage} alt={doctor.name} className="object-cover" />
+            <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 text-2xl font-bold">
+              {doctor.name?.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+
+          <h3 className="text-xl font-bold text-blue-700 mb-1">{doctor.name}</h3>
+          <p className="text-gray-600 text-sm mb-1">{doctor.specialization}</p>
+
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mb-3">
+            <Stethoscope className="w-4 h-4" />
+            <span>{doctor.experience} years experience</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-1 mb-3">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star key={star} className="w-4 h-4 fill-orange-400 text-orange-400" />
+            ))}
+            <span className="font-bold text-sm ml-1">5.0</span>
           </div>
         </div>
 
-        <div className="mb-8 p-4 bg-blue-50 rounded-lg">
-          <div className="flex justify-between items-center">
-            <span className="font-semibold text-blue-900">
-              Selected Consultation:
-            </span>
-            <span className="text-lg font-bold text-blue-900">
-              {consultationType} - ₹{getConsultationPrice()}
-            </span>
+        <div className="space-y-3 mb-4 pb-4 border-b">
+          <div className="flex items-start gap-2">
+            <MapPin className="w-4 h-4 mt-1 text-gray-500 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-gray-600">Location</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {doctor.hospitalInfo?.hospital}, {doctor.hospitalInfo?.city}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <Calendar className="w-4 h-4 mt-1 text-gray-500 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-gray-600">Consultation Fee</p>
+              <p className="text-sm font-semibold text-green-600">₹{doctor.fees}</p>
+            </div>
           </div>
         </div>
 
-        <div className="mb-8">
-          <Label
-            htmlFor="symptoms"
-            className="text-base font-semibold mb-4 block"
-          >
-            Describe your symptoms or concerns *
-          </Label>
-          <Textarea
-            id="symptoms"
-            placeholder="Please describe what brings you to see the doctor today..."
-            value={symptoms}
-            onChange={(e) => setSymptoms(e.target.value)}
-            rows={5}
-            className="resize-none border-2 focus:border-blue-500"
-          />
-        </div>
-      </div>
+        {doctor.category && doctor.category.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs text-gray-600 mb-2">Specializations</p>
+            <div className="flex flex-wrap gap-2">
+              {doctor.category.slice(0, 3).map((category: string, idx: number) => (
+                <Badge key={idx} variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                  {category}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
 
-      <div className="flex justify-between gap-2">
-        <Button variant="outline" onClick={onBack} className="PX-8 PY-3">
-          Back
-        </Button>
-        <Button
-          onClick={onContinue}
-          disabled={!symptoms.trim()}
-          className="px-7 py-3 bg-blue-600 hover:bg-blue-700"
-        >
-          Continue to Payment
-        </Button>
-      </div>
-    </div>
+        <div className="bg-blue-50 rounded-lg p-3">
+          <p className="text-xs text-blue-900">
+            <span className="font-semibold">Note:</span> Consultation fee may vary based on the type of consultation selected.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default ConsultationStep;
+export default DoctorProfile;
